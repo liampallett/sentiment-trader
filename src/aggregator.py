@@ -12,8 +12,8 @@ class Signal:
     pct_negative: float
 
 
-def calculate_aggregate(headlines: list[dict]) -> Signal:
-    if not headlines:
+def calculate_aggregate(sentiments: list[dict]) -> Signal:
+    if not sentiments:
         return Signal(
             score=0.0,
             pct_positive=0.0,
@@ -21,9 +21,9 @@ def calculate_aggregate(headlines: list[dict]) -> Signal:
             pct_negative=0.0,
         )
 
-    total = sum(DIRECTION[e["label"]] * e["score"] for e in headlines)
-    labels = Counter(e["label"] for e in headlines)
-    n = len(headlines)
+    total = sum(DIRECTION[e["label"]] * e["score"] for e in sentiments)
+    labels = Counter(e["label"] for e in sentiments)
+    n = len(sentiments)
 
     return Signal(
         score=total / n,
