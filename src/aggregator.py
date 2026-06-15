@@ -1,4 +1,7 @@
+from collections import Counter
 from dataclasses import dataclass
+
+DIRECTION = {"positive": 1, "negative": -1, "neutral": 0}
 
 
 @dataclass
@@ -18,36 +21,13 @@ def calculate_aggregate(headlines: list[dict]) -> Signal:
             pct_negative=0.0,
         )
 
-    total = 0
-    num_entries = len(headlines)
-    num_pos = 0
-    num_neg = 0
-    num_neutral = 0
-
-    for entry in headlines:
-        match entry["label"]:
-            case "positive":
-                direction = 1
-                num_pos += 1
-            case "negative":
-                direction = -1
-                num_neg += 1
-            case _:
-                direction = 0
-                num_neutral += 1
-        weight = float(entry["score"])
-        weighted_direction = direction * weight
-
-        total += weighted_direction
-
-    average = total / num_entries
-    pct_pos = num_pos / num_entries * 100
-    pct_neg = num_neg / num_entries * 100
-    pct_neutral = num_neutral / num_entries * 100
+    total = sum(DIRECTION[e["label"]] * e["score"] for e in headlines)
+    labels = Counter(e["label"] for e in headlines)
+    n = len(headlines)
 
     return Signal(
-        score=average,
-        pct_positive=pct_pos,
-        pct_neutral=pct_neutral,
-        pct_negative=pct_neg,
+        score=total / n,
+        pct_positive=labels["positive"] / n * 100,
+        pct_neutral=labels["neutral"] / n * 100,
+        pct_negative=labels["negative"] / n * 100,
     )
