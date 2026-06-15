@@ -40,7 +40,7 @@ def insert(timestamp, ticker, price, headlines, classified):
         for text, result in zip(headlines, classified)
     ]
     cursor.executemany(
-        "INSERT into headlines (run_id, text, label, score) VALUES (?, ?, ?, ?)",
+        "INSERT INTO headlines (run_id, text, label, score) VALUES (?, ?, ?, ?)",
         rows,
     )
     conn.commit()
