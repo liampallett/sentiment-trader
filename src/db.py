@@ -27,5 +27,25 @@ def init_db():
     conn.close()
 
 
+def insert(timestamp, ticker, price, headlines, classified):
+    conn = sqlite3.connect("data/runs.db")
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO runs (timestamp, ticker, price) VALUES (?, ?, ?)",
+        (timestamp, ticker, price),
+    )
+    run_id = cursor.lastrowid
+    rows = [
+        (run_id, text, result["label"], result["score"])
+        for text, result in zip(headlines, classified)
+    ]
+    cursor.executemany(
+        "INSERT into headlines (run_id, text, label, score) VALUES (?, ?, ?, ?)",
+        rows,
+    )
+    conn.commit()
+    conn.close()
+
+
 if __name__ == "__main__":
     init_db()
